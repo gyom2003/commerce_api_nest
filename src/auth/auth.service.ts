@@ -96,4 +96,18 @@ export class AuthService {
     async logout(userId: string) {
         return this.userService.update(userId, { refreshToken: undefined })
     }
+
+    async refreshTokens(userId: string, refreshToken: string) {
+        const user = await this.userService.findById(userId);
+        if (!user || !user.refreshToken)
+          throw new BadRequestException('Access Denied');
+        const refreshTokenMatches = await argon2.verify(
+          user.refreshToken,
+          refreshToken,
+        );
+        if (!refreshTokenMatches) throw new BadRequestException('Access Denied');
+        const tokens = await this.getAllTokens(user.id, user.username);
+        await this.updateRefreshToken(user.id, tokens.refreshToken);
+        return tokens;
+      }
 }

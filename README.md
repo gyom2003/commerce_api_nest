@@ -58,6 +58,30 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+```bash
+# All the PostMan Requests in order to test
+
+$ POST http://localhost:4000/auth/signup
+-body raw object schema: {username: "xxx", "password": "xxx", name: "xxx"}
+Pour ajouter un utilisateur dans notre système
+
+$ GET http://localhost:4000/users
+-none
+Afin d'avoir la liste des utilisateurs présents en base
+
+$ POST http://localhost:4000/auth/signin
+-body raw object schema: {username: "xxx", "password": "xxx"}
+Se connecter par identifiants comparaison avec nos données hasher en base
+
+$ GET http://localhost:4000/auth/logout
+-Authorization, Beared Token Token: *votre token d'accès*
+Se logout que si nous somme actuellement connecté par le token d'accès
+
+$ GET http://localhost:4000/auth/refresh
+-Authorization, Beared Token Token: *votre token refresh*
+Refresh de votre session si login avec une expiration de 15min
+```
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

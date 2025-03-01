@@ -79,8 +79,6 @@ export class AuthService {
 
     async signIn(data: AuthDto) {
         const userAuth = await this.userService.findByUsername(data.username);
-        console.log("user trouvé ==>", userAuth, data)
-        //console.log("mdp input ==>", data.password)
         if (!userAuth) {
             throw new BadRequestException('user dont exist')
         }

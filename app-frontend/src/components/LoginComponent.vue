@@ -1,174 +1,249 @@
 <template>
-    <div id="app">
+    <div class="login-page">
+      <div class="login-container">
+        <transition name="fade">
+          <div
+            v-if="!registerActive"
+            class="form-box"
+            key="sign-in"
+          >
+            <h1>Sign In</h1>
+            <form class="login-form" @submit.prevent="signIn">
+              <input
+                type="email"
+                placeholder="Email"
+                v-model.trim="emailLogin"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                v-model.trim="passwordLogin"
+              />
+              <button type="submit">Sign In</button>
+            </form>
+            <p>
+              Don't have an account?
+              <a href="#" @click="toggleRegister">Sign up here</a>
+            </p>
+          </div>
 
-        <div class="login-page">
-      <transition name="fade">
-         <div v-if="!registerActive" class="wallpaper-login"></div>
-      </transition>
-      <div class="wallpaper-register"></div>
-
-      <div class="container">
-         <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-8 mx-auto">
-               <div v-if="!registerActive" class="card login" v-bind:class="{ error: emptyFields }">
-                  <h1>Sign In</h1>
-                  <form class="form-group">
-                     <input v-model="emailLogin" type="email" class="form-control" placeholder="Email" required>
-                     <input v-model="passwordLogin" type="password" class="form-control" placeholder="Password" required>
-                     <input type="submit" class="btn btn-primary" @click="loginFront">
-                     <p>Don't have an account? <a href="#" @click="registerActive = !registerActive, emptyFields = false">Sign up here</a>
-                     </p>
-                     <p><a href="#">Forgot your password?</a></p>
-                  </form>
-               </div>
-
-               <div v-else class="card register" v-bind:class="{ error: emptyFields }">
-                  <h1>Sign Up</h1>
-                  <form class="form-group">
-                     <input v-model="emailReg" type="email" class="form-control" placeholder="Email" required>
-                     <input v-model="passwordReg" type="password" class="form-control" placeholder="Password" required>
-                     <input v-model="confirmReg" type="password" class="form-control" placeholder="Confirm Password" required>
-                     <input type="submit" class="btn btn-primary" @click="registerFront">
-                     <p>Already have an account? <a href="#" @click="registerActive = !registerActive, emptyFields = false">Sign in here</a>
-                     </p>
-                  </form>
-               </div>
-            </div>
-         </div>
-
+          <div
+            v-else
+            class="form-box"
+            key="sign-up"
+          >
+            <h1>Sign Up</h1>
+            <form class="login-form" @submit.prevent="signUp">
+                <input
+                    type="name"
+                    placeholder="Name"
+                    v-model.trim="nameReg"
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                v-model.trim="emailReg"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                v-model.trim="passwordReg"
+              />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                v-model.trim="confirmReg"
+              />
+              <button type="submit">Sign Up</button>
+            </form>
+            <p>
+              Already have an account?
+              <a href="#" @click="toggleRegister">Sign in here</a>
+            </p>
+          </div>
+        </transition>
       </div>
-   </div>
-
     </div>
-</template>
-
-<script>
-import axios from "axios";
-import { server } from "../utils/baseUrl";
-
-export default {
+  </template>
+  
+  <script>
+  import axios from 'axios';
+  //import { response } from 'express';
+  
+  export default {
+    name: 'LoginComponent',
     data() {
-        return {
-            registerActive: false, 
-            emailLogin: "", 
-            passwordLogin: "", 
-            emailReg: "", 
-            passwordReg: "", 
-            confirmReg: "", 
-            emptyFields: false
-        }
+      return {
+        registerActive: false,
+  
+        // ign In
+        emailLogin: '',
+        passwordLogin: '',
+  
+        //Sign Up
+        emailReg: '',
+        nameReg: '',
+        passwordReg: '',
+        confirmReg: '',
+      };
     },
-
     methods: {
-        loginFront() {
-            //conditions front
-            if (this.emailLogin==="" || this.passwordLogin==="") {
-                this.emptyFields = true
-            } else {
-                //conditions back
-                let signin_data = {
-                    emailLogin: this.emailLogin,
-                    passwordLogin: this.passwordLogin
-                }
-                axios.post(`${server.baseURL}/auth/signin`, signin_data).then(data => {
-                    console.log("data envoyé login ==>", data)
-                });
-            }       
-        },
-
-        registerFront() {
-             //conditions front
-             if (this.emailLogin==="" || this.passwordLogin==="" || this.confirmReg==="") {
-                this.emptyFields = true
-             } else {
-                  //conditions back 
-                  let signup_data = {
-                    emailLogin: this.emailLogin,
-                    passwordLogin: this.passwordLogin
-                  }  
-                  axios.post(`${server.baseURL}/auth/signup`, signup_data).then(data => {
-                    console.log("data envoyé signup ==>", data)
-                });
-             }      
+      // Bascule entre login et register
+      toggleRegister() {
+        this.registerActive = !this.registerActive;
+        // Petit reset si besoin
+        // this.clearFields();
+      },
+  
+      signIn() {
+        if (!this.emailLogin || !this.passwordLogin) {
+          return alert('Please enter Email and Password');
         }
-    }
-}
-</script>
+  
+        const signinData = {
+          username: this.emailLogin,
+          password: this.passwordLogin,
+        };
+        axios({
+            method: 'post', 
+            url: 'http://localhost:4000/auth/signin',
+            headers: {}, 
+            data: signinData
+        })
+        .then(response => {
+            console.log("signin with success =>", response.data)
+            const tokenRef = response.data.accessToken
+            localStorage.setItem('accessToken', tokenRef)
+            this.$router.push('/home');
+        })
+        .catch((error) => {
+            console.log("erreur request sign in =>", error)
+        })
+      },
+  
+      signUp() {
+        if (!this.emailReg || !this.passwordReg || !this.confirmReg) {
+          return alert('Please fill all fields');
+        }
+        if (this.passwordReg !== this.confirmReg) {
+          return alert('Passwords do not match');
+        }
+  
+        const signupData = {
+            name: this.nameReg,
+            username: this.emailReg,
+            password: this.passwordReg,
+        };
+        axios({
+            method: 'post', 
+            url: 'http://localhost:4000/auth/signup',
+            headers: {}, 
+            data: signupData
+        })
+        .then(response => {
+            console.log("signin with success =>", response.data)
+            const tokenRef = response.data.accessToken
+            localStorage.setItem('accessToken', tokenRef)
+            this.$router.push('/home');
+        })
+        .catch((error) => {
+            console.log("erreur request sign in =>", error)
+        })
+        // axios
+        //   .post('http://localhost:4000/auth/signup', signupData)
+        //   .then((res) => {
+        //     console.log('SignUp success:', res.data);
+        //   })
+        //   .catch((err) => {
+        //     console.error('SignUp error:', err.response?.data || err);
+        //   });
+      },
+  
+      clearFields() {
+        this.emailLogin = '';
+        this.passwordLogin = '';
+        this.emailReg = '';
+        this.passwordReg = '';
+        this.confirmReg = '';
+      },
+    },
+  };
+  </script>
+  
+  <style>
+  .login-page {
+    height: 100vh;
+    background: url('https://images.pexels.com/photos/32237/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260')
+      no-repeat center center;
+    background-size: cover;
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 350px;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
-<style>
-p {
-   line-height: 1rem;
-}
-
-.card {
-   padding: 20px;
-}
-
-.form-group {
-   input {
-      margin-bottom: 20px;
-   }
-}
-
-.login-page {
-   align-items: center;
-   display: flex;
-   height: 100vh;
-
-   .wallpaper-login {
-      background: url(https://images.pexels.com/photos/32237/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260)
-         no-repeat center center;
-      background-size: cover;
-      height: 100%;
-      position: absolute;
-      width: 100%;
-   }
-   
-   .fade-enter-active,
-   .fade-leave-active {
-  transition: opacity .5s;
-}
-   .fade-enter,
-   .fade-leave-to {
-      opacity: 0;
-   }
-   
-   .wallpaper-register {
-      background: url(https://images.pexels.com/photos/533671/pexels-photo-533671.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260)
-         no-repeat center center;
-      background-size: cover;
-      height: 100%;
-      position: absolute;
-      width: 100%;
-      z-index: -1;
-   }
-
-   h1 {
-      margin-bottom: 1.5rem;
-   }
-}
-
-.error {
-   animation-name: errorShake;
-   animation-duration: 0.3s;
-}
-
-@keyframes errorShake {
-   0% {
-      transform: translateX(-25px);
-   }
-   25% {
-      transform: translateX(25px);
-   }
-   50% {
-      transform: translateX(-25px);
-   }
-   75% {
-      transform: translateX(25px);
-   }
-   100% {
-      transform: translateX(0);
-   }
-}
-
-</style>
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .form-box {
+    text-align: center;
+  }
+  
+  /* ----- Formulaires ----- */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .login-form input {
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .login-form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+  }
+  
+  .login-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.4s;
+  }
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
+  }
+  
+  .form-box p {
+    margin-top: 1rem;
+  }
+  
+  .form-box a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  .form-box a:hover {
+    text-decoration: underline;
+  }
+  </style>
+  

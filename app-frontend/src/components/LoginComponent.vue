@@ -8,7 +8,7 @@
             key="sign-in"
           >
             <h1>Sign In</h1>
-            <form class="login-form" @submit.prevent="signIn">
+            <form class="login-form" @submit.prevent="signInLogin">
               <input
                 type="email"
                 placeholder="Email"
@@ -33,7 +33,7 @@
             key="sign-up"
           >
             <h1>Sign Up</h1>
-            <form class="login-form" @submit.prevent="signUp">
+            <form class="login-form" @submit.prevent="signupLogin">
                 <input
                     type="name"
                     placeholder="Name"
@@ -67,7 +67,8 @@
   </template>
   
   <script>
-  import axios from 'axios';
+  //import axios from 'axios';
+  import authGlobalState from '../stores/authPinia';
   //import { response } from 'express';
   
   export default {
@@ -87,6 +88,7 @@
         confirmReg: '',
       };
     },
+
     methods: {
       // Bascule entre login et register
       toggleRegister() {
@@ -95,77 +97,90 @@
         // this.clearFields();
       },
   
-      signIn() {
-        if (!this.emailLogin || !this.passwordLogin) {
-          return alert('Please enter Email and Password');
-        }
-  
-        const signinData = {
-          username: this.emailLogin,
-          password: this.passwordLogin,
-        };
-        axios({
-            method: 'post', 
-            url: 'http://localhost:4000/auth/signin',
-            headers: {}, 
-            data: signinData
-        })
-        .then(response => {
-            console.log("signin with success =>", response.data)
-            const tokenRef = response.data.accessToken
-            localStorage.setItem('accessToken', tokenRef)
-            this.$router.push('/home');
-        })
-        .catch((error) => {
-            console.log("erreur request sign in =>", error)
-        })
+      async signInLogin() {
+        const authGlobalStateRef = authGlobalState()
+        await authGlobalStateRef.signin(this.emailLogin, this.passwordLogin)
+        this.$router.push('/home');
       },
-  
-      signUp() {
+
+      async signupLogin() {
         if (!this.emailReg || !this.passwordReg || !this.confirmReg) {
           return alert('Please fill all fields');
         }
         if (this.passwordReg !== this.confirmReg) {
           return alert('Passwords do not match');
         }
-  
-        const signupData = {
-            name: this.nameReg,
-            username: this.emailReg,
-            password: this.passwordReg,
-        };
-        axios({
-            method: 'post', 
-            url: 'http://localhost:4000/auth/signup',
-            headers: {}, 
-            data: signupData
-        })
-        .then(response => {
-            console.log("signin with success =>", response.data)
-            const tokenRef = response.data.accessToken
-            localStorage.setItem('accessToken', tokenRef)
-            this.$router.push('/home');
-        })
-        .catch((error) => {
-            console.log("erreur request sign in =>", error)
-        })
-        // axios
-        //   .post('http://localhost:4000/auth/signup', signupData)
-        //   .then((res) => {
-        //     console.log('SignUp success:', res.data);
-        //   })
-        //   .catch((err) => {
-        //     console.error('SignUp error:', err.response?.data || err);
-        //   });
+        const authGlobalStateRef = authGlobalState()
+        await authGlobalStateRef.signup(this.nameReg, this.emailReg, this.passwordReg)
+        this.$router.push('/home');
       },
+
+      // signIn() {
+      //   if (!this.emailLogin || !this.passwordLogin) {
+      //     return alert('Please enter Email and Password');
+      //   }
   
-      clearFields() {
-        this.emailLogin = '';
-        this.passwordLogin = '';
-        this.emailReg = '';
-        this.passwordReg = '';
-        this.confirmReg = '';
-      },
+      //   const signinData = {
+      //     username: this.emailLogin,
+      //     password: this.passwordLogin,
+      //   };
+      //   axios({
+      //       method: 'post', 
+      //       url: 'http://localhost:4000/auth/signin',
+      //       headers: {}, 
+      //       data: signinData
+      //   })
+      //   .then(response => {
+      //       console.log("signin with success =>", response.data)
+      //       const tokenRef = response.data.accessToken
+      //       localStorage.setItem('accessToken', tokenRef)
+      //       //mise à jour lcoalstorage
+      //       this.$root.isLoggedIn = tokenRef
+      //       this.$router.push('/home');
+      //   })
+      //   .catch((error) => {
+      //       console.log("erreur request sign in =>", error)
+      //   })
+      // },
+  
+      // signUp() {
+      //   if (!this.emailReg || !this.passwordReg || !this.confirmReg) {
+      //     return alert('Please fill all fields');
+      //   }
+      //   if (this.passwordReg !== this.confirmReg) {
+      //     return alert('Passwords do not match');
+      //   }
+  
+      //   const signupData = {
+      //       name: this.nameReg,
+      //       username: this.emailReg,
+      //       password: this.passwordReg,
+      //   };
+      //   axios({
+      //       method: 'post', 
+      //       url: 'http://localhost:4000/auth/signup',
+      //       headers: {}, 
+      //       data: signupData
+      //   })
+      //   .then(response => {
+      //       console.log("signUp with success =>", response.data)
+      //       const tokenRef = response.data.accessToken
+      //       localStorage.setItem('accessToken', tokenRef)
+      //       this.$root.isLoggedIn = tokenRef
+      //       this.$router.push('/home');
+      //   })
+      //   .catch((error) => {
+      //       console.log("erreur request sign in =>", error)
+      //   })
+      // },
+  
+      // clearFields() {
+      //   this.emailLogin = '';
+      //   this.passwordLogin = '';
+      //   this.emailReg = '';
+      //   this.passwordReg = '';
+      //   this.confirmReg = '';
+      // },
     },
   };
   </script>

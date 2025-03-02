@@ -10,9 +10,9 @@ import { UsersService } from '../users/users.service';
 @Injectable()
 export class AuthService {
     constructor(
-        private userService: UsersService, 
-        private jwtService: JwtService, 
-        private configServices: ConfigService,
+        private readonly userService: UsersService, 
+        private readonly jwtService: JwtService, 
+        private readonly configServices: ConfigService,
     ) {}
 
     hashMethod(data: string) {

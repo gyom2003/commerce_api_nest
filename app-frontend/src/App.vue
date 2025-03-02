@@ -2,15 +2,21 @@
 
 <template>
   <div id="app">
-    <header v-if="!isLoggedIn">
-      <p>
-        <strong>Default page</strong>
-      </p>
-      <nav>
-        <RouterLink v-if="hasRefreshToken" to="/home">Go to Home</RouterLink>
+    <header>
+      <div v-if="!hasToken">
+        <p>
+          <strong>Default page</strong>
+        </p>
+        <nav>
+          <br />
+          <RouterLink to="/auth/signin">Login</RouterLink>
+        </nav>
+      </div>
+
+      <div v-else>
         <br />
-        <RouterLink to="/auth/signin">Login</RouterLink>
-      </nav>
+        <button @click="LogoutCall">Logout</button>
+      </div>
     </header>
 
     <RouterView />
@@ -20,66 +26,41 @@
 </template>
 
 <script >
-import axios from 'axios';
-//import { response } from 'express';
-import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { computed } from 'vue';
+import authGlobalState from './stores/authPinia'
 
 export default {
   name: 'App',
-  data() {
-    return {
-      isLoggedIn: localStorage.getItem('accessToken'),
-      hasRefreshToken: ref(false)
-    }
-  },
+
+  // methods: {
+  //   async LogoutCall() {
+  //     if (!this.isLoggedIn) {
+  //         this.$router.push('/auth/signin');
+  //         return;
+  //     }
+  //     const authGlobalStateRef = authGlobalState()
+  //     await authGlobalStateRef.logout()
+  //     this.$router.push('/auth/signin');
+  //   }
+  // },
   setup() {
-    try {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-         console.log("pas de token d'accès =>", token) 
-        }
+    const router = useRouter()
+    const authGlobalStateRef = authGlobalState()
 
-       axios({
-        method: 'get', 
-        url: 'http://localhost:4000/auth/me', 
-        headers: { Authorization: `Bearer ${token}` }
-       })
-       .then(response => {
-          console.log("response from auth me", response.data)
-          this.hasRefreshToken = response.data.hasRefreshToken
-       })
-      } catch (err) {
-        console.error(err);
-      }
-    // onMounted(async () => {
-    // })
-  }, 
-  //methods: {
-    // checkAuthStatus() {
-    //   try {
-    //     const accessToken = localStorage.getItem('accessToken')
-    //     if (!accessToken) {
-    //       this.isLoggedIn = false
-    //       this.hasRefreshToken = false
-    //       return;
-    //     }
+    const hasToken = computed(() => !!authGlobalStateRef.accessToken)
 
-    //     //get sur notre endpoint recup refresh selon id
-    //     const res = axios.get('http://localhost:4000/auth/me', {
-    //       headers: {
-    //         Authorization: `Bearer ${accessToken}`
-    //       }
-    //     })
-    //     this.hasRefreshToken = res.data.hasRefreshToken
-    //     this.isLoggedIn = true
+    const LogoutCall = async () => {
+      await authGlobalStateRef.logout()
+      router.push('/auth/signin')
+    }
 
-    //   } catch (error) {
-    //     console.log("error auth check =>", error)
-    //     this.isLoggedIn = false
-    //     this.hasRefreshToken = false
-    //   }
-    // }
-  //}
+    return {
+      hasToken, 
+      LogoutCall
+    }
+
+   }, 
 }
 </script>
 

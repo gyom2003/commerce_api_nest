@@ -32,18 +32,7 @@ import authGlobalState from './stores/authPinia'
 
 export default {
   name: 'App',
-
-  // methods: {
-  //   async LogoutCall() {
-  //     if (!this.isLoggedIn) {
-  //         this.$router.push('/auth/signin');
-  //         return;
-  //     }
-  //     const authGlobalStateRef = authGlobalState()
-  //     await authGlobalStateRef.logout()
-  //     this.$router.push('/auth/signin');
-  //   }
-  // },
+  
   setup() {
     const router = useRouter()
     const authGlobalStateRef = authGlobalState()

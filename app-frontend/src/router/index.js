@@ -32,7 +32,7 @@ const router = createRouter({
     routes,
 })
 
-//conditions redirect selon JWT tokens
+//TODO: voir si on garde cette condition
 router.beforeEach((to, from, next) => {
     const isLoggedIn = localStorage.getItem('accessToken') ? true: false;
 

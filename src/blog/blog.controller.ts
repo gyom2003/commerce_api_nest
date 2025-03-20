@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, HttpStatus, NotFoundException, Query} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpStatus, NotFoundException, Query} from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { Response } from 'express';
 import { Res }  from '@nestjs/common';
@@ -23,12 +23,8 @@ export class BlogController {
     }
 
     @Post('/blog')
-    async addBlog(@Res() res, createBlogDto: CreateBlogDto) {
-        const newBlog = await this.blogService.createBlog(createBlogDto)
-        return res.status(HttpStatus.OK).json({
-            message: "your blog has been added w success !",
-            blog: newBlog
-        })
+    async addBlog(@Body() createBlogDto: CreateBlogDto) {
+        return this.blogService.createBlog(createBlogDto)
     }
 
     @Put('/edit')

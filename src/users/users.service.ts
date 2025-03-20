@@ -23,8 +23,8 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  async findByUsername(username: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ username }).exec();
+  async findByUserEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email }).exec();
   }
 
   async update(

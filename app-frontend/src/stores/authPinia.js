@@ -49,12 +49,12 @@ const authGlobalState = defineStore('auth', {
                 console.log("error login front pinia =>", error)
             }
         },
-        async signup(username, password, name) {
+        async signup(username, email, password) {
             try {
                 const res = await axios({
                     method: 'post', 
                     url: 'http://localhost:4000/auth/signup',
-                    data: {name, username, password}
+                    data: {username, email, password}
                 });
                 const { accessToken, refreshToken } = res.data
                 this.setTokens(accessToken, refreshToken)

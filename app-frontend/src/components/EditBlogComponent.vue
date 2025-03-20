@@ -35,7 +35,6 @@
 
 <script>
 import axios from 'axios';
-import { server } from '../utils/baseUrl';
 import router from "../router/index";
 
 
@@ -63,7 +62,7 @@ export default {
                 author: this.blog.author,
                 date_posted: this.blog.date_posted
             }
-            axios.put(`${server.baseURL}/blog/edit?blogID=${this.id}`, blogData)
+            axios.put(`http://localhost:4000/blog/edit?blogID=${this.id}`, blogData)
                 .then(data => {
                     //data.data ?
                     console.log("data edit blog", data)
@@ -74,7 +73,7 @@ export default {
 
         getBLog() {
             axios
-                .get(`${server.baseURL}/blog/blog/${this.id}`)
+                .get(`http://localhost:4000/blog/blog/${this.id}`)
                 .then(data => {this.blog = data.data})
         },
         navigate() {

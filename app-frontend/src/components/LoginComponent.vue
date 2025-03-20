@@ -68,7 +68,7 @@
   
   <script>
   import authGlobalState from '../stores/authPinia';
-  import router from "../router/index";
+  //import router from "../router/index";
   
   export default {
     name: 'LoginComponent',
@@ -96,8 +96,8 @@
       async signInLogin() {
         const authGlobalStateRef = authGlobalState()
         await authGlobalStateRef.signin(this.emailLogin, this.passwordLogin)
-        //this.$router.push('/home');
-        router.push({ name: "home" })
+        this.$router.push('/home');
+        //router.push({ name: "/home" })
       },
 
       async signupLogin() {
@@ -109,8 +109,8 @@
         }
         const authGlobalStateRef = authGlobalState()
         await authGlobalStateRef.signup(this.nameReg, this.emailReg, this.passwordReg)
-        //this.$router.push('/home');
-        router.push({ name: "home" })
+        this.$router.push('/home');
+        //router.push({ name: "/home" })
       },
     },
   };

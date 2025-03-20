@@ -1,20 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { IsString } from 'class-validator';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
 export class Blog {
+  @IsString()
   @Prop({ required: true })
   title: string;
 
-  @Prop()
+  @IsString()
+  @Prop({ required: true })
   description: string;
 
-  @Prop()
+  @IsString()
+  @Prop({ required: true })
   body: string;
 
-  @Prop()
+  @IsString()
+  @Prop({ required: true })
   author: string;
 
   @Prop()

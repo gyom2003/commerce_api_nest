@@ -56,14 +56,15 @@ export class AuthService {
     }
 
     async signUp(createUserDto: CreateUserDto): Promise<any> {
-        const userExists = await this.userService.findByUsername(
-            createUserDto.username,
+        const userExists = await this.userService.findByUserEmail(
+            createUserDto.email,
         );
         if (userExists) {
             throw new BadRequestException('User already exists');
         }
 
         const hash = await this.hashMethod(createUserDto.password)
+        console.log("signup controller DTO =>", createUserDto)
         const newUser = await this.userService.create({
             ...createUserDto, 
             password: hash
@@ -78,7 +79,8 @@ export class AuthService {
     }
 
     async signIn(data: AuthDto) {
-        const userAuth = await this.userService.findByUsername(data.username);
+        console.log("ici data depuis front =>", data)
+        const userAuth = await this.userService.findByUserEmail(data.username);
         if (!userAuth) {
             throw new BadRequestException('user dont exist')
         }

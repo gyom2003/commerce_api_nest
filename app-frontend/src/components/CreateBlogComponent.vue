@@ -36,7 +36,6 @@
 
 <script>
 import axios from 'axios';
-import { server } from '../utils/baseUrl';
 import router from "../router/index";
 
 export default {
@@ -68,7 +67,8 @@ export default {
     },
 
     submitToServer(data) {
-        axios.post(`${server.baseURL}/blog/blog`, data).then(data => {
+        
+        axios.post(`http://localhost:4000/blog/blog`, data).then(data => {
             //data.data ?
             console.log("data create blog", data)
             router.push({ name: "home" })

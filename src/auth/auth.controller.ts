@@ -38,18 +38,4 @@ export class AuthController {
     return this.authService.refreshTokens(refreshToken, userId)
   }
 
-  // @UseGuards(RefreshTokenGuardClass)
-  // @Get('me')
-  // getMeMethod(@Req() req: RequestWithUser) {
-  //   const userId = req.user['sub']
-  //   const refreshToken = req.user['refreshToken']
-  //   const user = this.userService.findById(userId)
-  //   console.log("ici user get by id before login ==>", user)
-  //   if (!user) {
-  //     throw new NotFoundException('User not found from the back')
-  //   }
-  //   return {
-  //     hasRefreshToken: !!refreshToken
-  //   }
-  // }
 }
